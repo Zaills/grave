@@ -11,6 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class TitleScreenMixin {
 	@Inject(method = "init", at = @At("TAIL"))
 	public void exampleMod$onInit(CallbackInfo ci) {
-		Grave.LOGGER.info("This line is printed by an example mod mixin!");
+		Grave.LOGGER.info("Grave Mixin");
 	}
 }

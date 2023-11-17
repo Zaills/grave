@@ -12,14 +12,14 @@
 			},
 			"contact": {
 				"homepage": "https://github.com/Zaills",
-				"issues": "https://github.com/QuiltMC/quilt-template-mod/issues",
-				"sources": "https://github.com/QuiltMC/quilt-template-mod"
+				"issues": "https://github.com/Zaills/grave/issues",
+				"sources": "https://github.com/Zaills/grave"
 			},
-			"icon": "assets/example_mod/icon.png"
+			"icon": "assets/grave/icon.png"
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"init": "com.example.example_mod.ExampleMod"
+			"init": "net.zaills.grave.Grave"
 		},
 		"depends": [
 			{
@@ -36,5 +36,5 @@
 			}
 		]
 	},
-	"mixin": "example_mod.mixins.json"
+	"mixin": "grave.mixins.json"
 }
