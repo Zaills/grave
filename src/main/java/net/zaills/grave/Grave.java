@@ -1,8 +1,6 @@
 package net.zaills.grave;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -52,9 +50,6 @@ public class Grave implements ModInitializer {
 			bp = new BlockPos(pos.x, pos.y - 1, pos.z);
 		}
 
-		BlockState bs = world.getBlockState(bp);
-		Block b = bs.getBlock();
-
 		DefaultedList<ItemStack> inv = DefaultedList.of();
 		inv.addAll(player.getInventory().main);
 		inv.addAll(player.getInventory().armor);
@@ -82,7 +77,7 @@ public class Grave implements ModInitializer {
 		}
 
 		if (!placed){
-			player.getInventory().dropAll();;
+			player.getInventory().dropAll();
 		}
 	}
 }

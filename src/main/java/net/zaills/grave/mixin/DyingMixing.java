@@ -22,9 +22,10 @@ public abstract class DyingMixing extends LivingEntity {
 		super(type, world);
 	}
 
-	@Redirect(method = "dropInventory", at = @At(value = "INVOKE", target = "net.minecraft.entity.player.PlayerInventory.dropALL()V"))
-	private void dropAll(PlayerInventory inventory){
+	@Redirect(method = "dropInventory()V", at = @At(value = "INVOKE", target = "net.minecraft.entity.player.PlayerInventory.dropALL()V"))
+	private void placeGrave(){
 		Grave.Place(this.world, this.getPos(), this.inventory.player);
 	}
 
 }
+
