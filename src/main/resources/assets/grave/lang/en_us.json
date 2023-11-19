@@ -1,0 +1,5 @@
+{
+  "text.config.grave-config.title" : "Grave Option",
+  "text.config.grave-config.option.Priorities_Inv" : "Priorities Player Inventory",
+  "text.config.grave-config.option.Priorities_Inv.tooltip" : "If false the grave replace you're inventory and drop the extra\nIf true you'll keep everything you have and the item that cannot go in drop"
+}

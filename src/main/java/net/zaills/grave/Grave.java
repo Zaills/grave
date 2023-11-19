@@ -17,6 +17,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.zaills.grave.block.GraveBlock;
 import net.zaills.grave.block.entity.GraveBlockEntity;
+import net.zaills.grave.config.GraveConfig;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.block.entity.api.QuiltBlockEntityTypeBuilder;
@@ -30,7 +31,10 @@ public class Grave implements ModInitializer {
 
 	public static  final GraveBlock GRAVE = new GraveBlock(QuiltBlockSettings.of(Material.ORGANIC_PRODUCT).strength(0.8f, -1f));
 	public static BlockEntityType<GraveBlockEntity> GRAVE_ENTITY;
-	//public static BlockEntityType<GraveBlock>
+
+
+	public static final GraveConfig CONFIG = GraveConfig.createAndLoad();
+
 	@Override
 	public void onInitialize(ModContainer mod) {
 		LOGGER.info("Grave Initializing");
