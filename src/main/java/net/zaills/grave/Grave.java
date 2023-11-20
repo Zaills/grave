@@ -74,6 +74,10 @@ public class Grave implements ModInitializer {
 
 				graveBlockEntity.markDirty();
 
+				player.totalExperience = 0;
+				player.experienceLevel = 0;
+				player.experienceProgress = 0;
+
 				System.out.println(player.getName() + " grave spawner at: " + gP.getX() + ", " + gP.getY() + ", " + gP.getZ());
 
 				break;
