@@ -19,7 +19,8 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"init": "net.zaills.grave.Grave"
+			"init": "net.zaills.grave.Grave",
+			"client_init": "net.zaills.grave.client.GraveClient"
 		},
 		"depends": [
 			{

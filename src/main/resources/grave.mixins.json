@@ -6,9 +6,7 @@
 	"mixins": [
     "DyingMixing"
   ],
-	"client": [
-
-  ],
+	"client": [],
 	"injectors": {
 		"defaultRequire": 1
 	}

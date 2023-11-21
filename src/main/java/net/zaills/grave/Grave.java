@@ -4,8 +4,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
@@ -22,31 +20,27 @@ import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.block.entity.api.QuiltBlockEntityTypeBuilder;
 import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Grave implements ModInitializer {
-	public static final String MOD_ID = "grave";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	public static  final GraveBlock GRAVE = new GraveBlock(QuiltBlockSettings.of(Material.ORGANIC_PRODUCT).strength(0.8f, -1f));
+	public static  final GraveBlock GRAVE = new GraveBlock(QuiltBlockSettings.of(Material.DECORATION).strength(0.8f, -1f));
 	public static BlockEntityType<GraveBlockEntity> GRAVE_ENTITY;
-
 
 	public static final GraveConfig CONFIG = GraveConfig.createAndLoad();
 
 	@Override
 	public void onInitialize(ModContainer mod) {
-		LOGGER.info("Grave Initializing");
+		LoggerFactory.getLogger("grave").info("Grave Initializing");
 		Registry.register(Registry.BLOCK, new Identifier("grave", "grave"), GRAVE);
 		GRAVE_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "grave:grave", QuiltBlockEntityTypeBuilder.create(GraveBlockEntity::new, GRAVE).build(null));
-		Registry.register(Registry.ITEM, new Identifier("grave", "grave"), new BlockItem(GRAVE, new Item.Settings()));
 	}
 
 	public static void Place(World world, Vec3d pos, PlayerEntity player){
 		if (world.isClient)
 			return;
 		BlockPos bp;
+
 		if (pos.y - 1 <= world.getDimension().minY()) {
 			bp = new BlockPos(new BlockPos(pos.x, world.getDimension().minY(), pos.z));
 		}

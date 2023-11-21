@@ -1,9 +1,6 @@
 package net.zaills.grave.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
@@ -19,6 +16,9 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.zaills.grave.block.entity.GraveBlockEntity;
 import org.jetbrains.annotations.Nullable;
@@ -45,6 +45,10 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 		return new GraveBlockEntity(pos, state);
 	}
 
+	@Override
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, ShapeContext ctx){
+		return VoxelShapes.cuboid(.1f, 0f, .1f, .9f, .3f, .9f);
+	}
 
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit){
