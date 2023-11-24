@@ -8,8 +8,9 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.*;
 import net.zaills.grave.block.entity.GraveBlockEntity;
 
 public class GraveRenderer implements BlockEntityRenderer<GraveBlockEntity> {
@@ -38,38 +39,35 @@ public class GraveRenderer implements BlockEntityRenderer<GraveBlockEntity> {
 
 		matrices.pop();
 
-		String name = "NoName";
+		String name;
 		if (entity.getOwner() != null) {
 			name = entity.getOwner().getName();
 		}
-
+		else{
+			name = "NoName";
+		}
 		matrices.push();
 
 		int wd = MinecraftClient.getInstance().textRenderer.getWidth(name);
 
 		float scl = .7f / wd;
 
-		/*switch (direction){
-			case NORTH:
-				break;
-			case SOUTH:
-				break;
-			case EAST:
-				break;
-			case WEST:
-				break;
-		}*/
 
-		matrices.translate(.5, 0, .5);
-		matrices.translate(0, .6, .42);
-		matrices.scale(-1, -1, 0);
+		matrices.translate(.5, .6, .5);
+		Entity cam = MinecraftClient.getInstance().cameraEntity;
+		assert cam != null;
+		matrices.multiply(new Quaternion(0, 1, 0, getYaw(entity.getPos(), cam.getPos())));
+		matrices.scale(1, -1, 0);
 
 		matrices.scale(scl, scl, scl);
 		matrices.translate(-wd / 2., -4.5, 0);
-
 		MinecraftClient.getInstance().textRenderer.draw(name, 0, 0, 0xFFFFFF, true, matrices.peek().getModel(), vertexConsumers, true, 0, light);
 		matrices.pop();
 
+	}
+
+	static float getYaw(BlockPos Bpos, Position Ppos){
+		return (float) Math.atan2(Bpos.getY(), Ppos.getY());
 	}
 
 	public GraveRenderer(BlockEntityRenderDispatcher dispatch){
