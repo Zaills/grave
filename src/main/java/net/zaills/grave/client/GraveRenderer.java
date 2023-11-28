@@ -84,7 +84,7 @@ public class GraveRenderer implements BlockEntityRenderer<GraveBlockEntity> {
 	public static Quaternion getQuad(BlockPos pos1, Position pos2){
 		double dx = pos1.getX() +.5 - pos2.getX();
 		double dz = pos1.getZ() +.5 - pos2.getZ();
-		double dir = Math.atan2(dx, dz);
-		return new Quaternion( 0, (float) Math.sin(dir/2), 0, (float) Math.cos(dir/2));
+		double heading = Math.atan2(dx, dz);
+		return new Quaternion( 0, (float) Math.sin(heading/2), 0, (float) Math.cos(heading/2));
 	}
 }
