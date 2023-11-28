@@ -13,6 +13,6 @@ import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 public class GraveClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient(ModContainer mod) {
-		BlockEntityRendererRegistry.register(Grave.GRAVE_ENTITY, (ctx) ->(BlockEntityRenderer<GraveBlockEntity>) (Object) new  GraveRenderer(ctx));
+		BlockEntityRendererRegistry.register(Grave.GRAVE_ENTITY, GraveRenderer::new);
 	}
 }

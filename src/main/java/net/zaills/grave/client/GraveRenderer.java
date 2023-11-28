@@ -14,14 +14,15 @@ import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Position;
+import net.minecraft.util.math.Quaternion;
 import net.zaills.grave.block.entity.GraveBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
 public class GraveRenderer implements BlockEntityRenderer<GraveBlockEntity> {
-	//public static final Identifier GRAVE = new Identifier("grave", "grave");
-
 	private final TextRenderer Tr;
 	private final SkullEntityModel PhM;
 	private final SkullEntityModel ShM;
@@ -56,6 +57,43 @@ public class GraveRenderer implements BlockEntityRenderer<GraveBlockEntity> {
 		}
 		model.render(matrices, vertexConsumers.getBuffer(getRL(entity.getOwner())), light, overlay, 1, 1, 1, 1);
 		matrices.pop();
+
+		int wd = MinecraftClient.getInstance().textRenderer.getWidth("Grave");
+
+		matrices.push();
+		switch (entity.getCachedState().get(Properties.HORIZONTAL_FACING)) {
+			case NORTH, SOUTH:
+				break;
+			case EAST, WEST:
+				matrices.multiply(new Quaternion( 0, -0.7071f, 0, 0.7071f));
+				matrices.translate(0, 0, -1);
+				break;
+		}
+		matrices.translate(.5, 1, .5);
+		matrices.scale(-1, -1, 0);
+
+		matrices.scale(.7F / wd, .7F / wd, .7F / wd);
+		matrices.translate(-wd / 2.0, -4.5, 0);
+		MinecraftClient.getInstance().textRenderer.draw("Grave", 0, 0, 0xFFFFFF, true, matrices.peek().getModel(), vertexConsumers, true, 0, light);
+		matrices.pop();
+
+		matrices.push();
+		switch (entity.getCachedState().get(Properties.HORIZONTAL_FACING)) {
+			case NORTH, SOUTH:
+				matrices.multiply(new Quaternion( 0, 1,0, 0));
+				matrices.translate(-1, 0, -1);
+				break;
+			case EAST, WEST:
+				matrices.multiply(new Quaternion( 0, 0.7071f, 0, 0.7071f));
+				matrices.translate(-1, 0, 0);
+		}
+		matrices.translate(.5, 1, .5);
+		matrices.scale(-1, -1, 0);
+
+		matrices.scale(.7F / wd, .7F / wd, .7F / wd);
+		matrices.translate(-wd / 2.0, -4.5, 0);
+		MinecraftClient.getInstance().textRenderer.draw("Grave", 0, 0, 0xFFFFFF, true, matrices.peek().getModel(), vertexConsumers, true, 0, light);
+		matrices.pop();
 	}
 
 	public static RenderLayer getRL(@Nullable GameProfile Pf){
@@ -67,4 +105,9 @@ public class GraveRenderer implements BlockEntityRenderer<GraveBlockEntity> {
 		return RenderLayer.getEntityCutoutNoCullZOffset(SkT);
 	}
 
+	public static float getyaw(BlockPos pos1, Position pos2){
+		double dx = pos1.getX() - pos2.getX();
+		double dz = pos1.getZ() - pos2.getZ();
+		return (float) Math.atan2(dx, dz);
+	}
 }
