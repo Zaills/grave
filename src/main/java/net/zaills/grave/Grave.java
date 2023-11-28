@@ -6,6 +6,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -67,12 +68,14 @@ public class Grave implements ModInitializer {
 				world.addBlockEntity(graveBlockEntity);
 
 				graveBlockEntity.markDirty();
+				world.getBlockState(bp).getBlock().onBreak(world, bp, world.getBlockState(bp), player);
 
 				player.totalExperience = 0;
 				player.experienceLevel = 0;
 				player.experienceProgress = 0;
 
-				System.out.println(player.getName() + " grave spawner at: " + gP.getX() + ", " + gP.getY() + ", " + gP.getZ());
+				System.out.println(player.getName() + " grave spawn at: " + gP.getX() + ", " + gP.getY() + ", " + gP.getZ());
+				player.sendMessage(Text.of("Grave spawn at: " + gP.getX() + ", " + gP.getY() + ", " + gP.getZ()), false);
 
 				break;
 			}

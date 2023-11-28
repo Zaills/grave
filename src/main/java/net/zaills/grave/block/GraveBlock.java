@@ -47,7 +47,7 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, ShapeContext ctx){
-		return VoxelShapes.cuboid(.1f, 0f, .1f, .9f, .3f, .9f);
+		return VoxelShapes.cuboid(.25f, 0f, .25f, .75f, .5f, .75f);
 	}
 
 	@Override
