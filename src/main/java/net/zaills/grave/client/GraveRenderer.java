@@ -25,7 +25,6 @@ public class GraveRenderer implements BlockEntityRenderer<GraveBlockEntity> {
 	private final SkullEntityModel PhM;
 	private final SkullEntityModel ShM;
 
-
 	public static final Identifier SkT = new Identifier("textures/entity/skeleton/skeleton.png");
 	public GraveRenderer(BlockEntityRendererFactory.Context ctx){
 		this.PhM = new SkullEntityModel(ctx.getLayerRenderDispatcher().getModelPart(EntityModelLayers.PLAYER_HEAD));
@@ -69,7 +68,6 @@ public class GraveRenderer implements BlockEntityRenderer<GraveBlockEntity> {
 
 		MinecraftClient.getInstance().textRenderer.draw("Grave", .5f, 0, 0xFFFFFF, true, matrices.peek().getModel(), vertexConsumers, true, 0, light);
 		matrices.pop();
-
 	}
 
 	public static RenderLayer getRL(@Nullable GameProfile Pf){
