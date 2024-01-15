@@ -12,6 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
@@ -76,13 +77,16 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 		}
 
 		BlockEntity bE = world.getBlockEntity(pos);
-
-		if (bE instanceof GraveBlockEntity graveBlockEntity && graveBlockEntity.getOwner() != null && graveBlockEntity.getOwner() == player.getGameProfile()){
-			if (player.isSneaking())
-				return ActionResult.PASS;
+		if (bE instanceof GraveBlockEntity graveBlockEntity && graveBlockEntity.getOwner().getId().equals(player.getGameProfile().getId())) {
+			if (player.isSneaking()){
+				player.sendMessage(Text.of(player.getEntityName() + "'s Grave"), true);
+			return ActionResult.PASS;
+		}
 			else
 				RetrieveGrave(player, world, pos);
 		}
+		else
+			player.sendMessage(Text.of(player.getEntityName() + "'s Grave"), true);
 		return player.isSneaking() ? ActionResult.PASS : ActionResult.SUCCESS;
 	}
 
@@ -199,11 +203,6 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 		if (!(bE instanceof GraveBlockEntity GbE)) return;
 
 		GbE.markDirty();
-		if (GbE.getInv() == null) return;
-		if (GbE.getOwner() == null) return;
-		if (!pE.getGameProfile().equals(GbE.getOwner())){
-			return;
-		}
 
 		if (CONFIG.Priorities_Inv())
 			RetrieveGraveINV(pE, world, pos, GbE);

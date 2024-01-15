@@ -64,6 +64,7 @@ public class Grave implements ModInitializer {
 				GraveBlockEntity graveBlockEntity = new GraveBlockEntity(gP, gS);
 				graveBlockEntity.setInv(inv);
 				graveBlockEntity.setOwner(player.getGameProfile());
+				System.out.println("player game Profile: " + player.getGameProfile());
 				graveBlockEntity.setXp(player.totalExperience);
 				world.addBlockEntity(graveBlockEntity);
 
