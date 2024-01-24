@@ -30,7 +30,6 @@ import java.util.Objects;
 public class Grave implements ModInitializer {
 
 	public static  final GraveBlock GRAVE = new Grave_notype(QuiltBlockSettings.of(Material.DECORATION).strength(0.8f, -1f));
-	//public static final Grave_suff GRAVE_SUFF = new Grave_suff(QuiltBlockSettings.of(Material.DECORATION).strength(0.8f, -1));
 	public static BlockEntityType<GraveBlockEntity> GRAVE_ENTITY;
 
 	public static final GraveConfig CONFIG = GraveConfig.createAndLoad();
@@ -39,7 +38,6 @@ public class Grave implements ModInitializer {
 	public void onInitialize(ModContainer mod) {
 		LoggerFactory.getLogger("grave").info("Grave Initializing");
 		Registry.register(Registry.BLOCK, new Identifier("grave", "grave"), GRAVE);
-		//Registry.register(Registry.BLOCK, new Identifier("grave", "grave_hand"), GRAVE_SUFF);
 		GRAVE_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "grave:grave", QuiltBlockEntityTypeBuilder.create(GraveBlockEntity::new, GRAVE).build(null));
 	}
 
@@ -47,8 +45,6 @@ public class Grave implements ModInitializer {
 		if (world.isClient)
 			return;
 		BlockPos bp;
-
-		//type_grave(world.getBlockState(new BlockPos(pos)).getBlock());
 
 		if (pos.y - 1 <= world.getDimension().minY()) {
 			bp = new BlockPos(new BlockPos(pos.x, world.getDimension().minY(), pos.z));
