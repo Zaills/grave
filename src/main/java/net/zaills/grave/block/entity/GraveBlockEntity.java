@@ -21,6 +21,8 @@ public class GraveBlockEntity extends BlockEntity {
 	private DefaultedList<ItemStack> inv;
 	private	int xp;
 	private GameProfile Owner;
+	private BlockPos location;
+	private int type;
 
 	public GraveBlockEntity(BlockPos pos, BlockState state) {
 		super(Grave.GRAVE_ENTITY, pos, state);
@@ -28,6 +30,8 @@ public class GraveBlockEntity extends BlockEntity {
 		this.inv = DefaultedList.ofSize(41, ItemStack.EMPTY);
 		this.xp = 0;
 		this.Owner = null;
+		this.location = BlockPos.ORIGIN;
+		this.type = 0;
 	}
 
 	public void setInv(DefaultedList<ItemStack> inv){
@@ -45,18 +49,35 @@ public class GraveBlockEntity extends BlockEntity {
 		this.markDirty();
 	}
 
+	public void setLocation(BlockPos pos){
+		this.location = pos;
+		this.markDirty();
+	}
+
+	public void setType(int type){
+		this.type = type;
+		this.markDirty();
+	}
+
 	public DefaultedList<ItemStack> getInv(){
-		return inv;
+		return this.inv;
 	}
 
 	public int getXp(){
-		return xp;
+		return this.xp;
 	}
 
 	public GameProfile getOwner(){
-		return Owner;
+		return this.Owner;
 	}
 
+	public BlockPos getLocation(){
+		return this.location;
+	}
+
+	public int gettype(){
+		return this.type;
+	}
 	@Override
 	public void	readNbt(NbtCompound tag){
 		super.readNbt(tag);
@@ -68,6 +89,8 @@ public class GraveBlockEntity extends BlockEntity {
 		if (tag.contains("Owner")) {
 			this.Owner = NbtHelper.toGameProfile(tag.getCompound("Owner"));
 		}
+		int[] array = tag.getIntArray("Location");
+		this.location = new BlockPos(array[0], array[1], array[2]);
 	}
 
 	@Override
@@ -81,6 +104,7 @@ public class GraveBlockEntity extends BlockEntity {
 		if (Owner != null){
 			tag.put("Owner", NbtHelper.writeGameProfile(new NbtCompound(), Owner));
 		}
+		tag.putIntArray("Location", new int[]{this.location.getX(), this.location.getY(), this.location.getZ()});
 	}
 
 	@Nullable

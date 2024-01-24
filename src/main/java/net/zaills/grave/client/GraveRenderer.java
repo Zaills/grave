@@ -20,6 +20,7 @@ import net.zaills.grave.block.entity.GraveBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class GraveRenderer implements BlockEntityRenderer<GraveBlockEntity> {
 	private final SkullEntityModel PhM;
@@ -33,26 +34,33 @@ public class GraveRenderer implements BlockEntityRenderer<GraveBlockEntity> {
 
 	@Override
 	public void render(GraveBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-		matrices.push();
-		matrices.translate(.5, 0, .5);
-		matrices.scale(-1, -1, -1);
-		var model = entity.getOwner() == null ? this.ShM : this.PhM;
-		switch (entity.getCachedState().get(Properties.HORIZONTAL_FACING)){
-			case NORTH:
-				model.setHeadRotation(0, 180, 0);
-				break;
-			case SOUTH:
-				model.setHeadRotation(0, 0, 0);
-				break;
-			case EAST:
-				model.setHeadRotation(0, 90, 0);
-				break;
-			case WEST:
-				model.setHeadRotation(0, 270, 0);
-				break;
+
+		if (Objects.equals(entity.getCachedState().getBlock().getName().getString(), "block.grave.grave")){
+			matrices.push();
+			matrices.translate(.5, 0, .5);
+			matrices.scale(-.8f, -.8f, -.8f);
+			var model = entity.getOwner() == null ? this.ShM : this.PhM;
+			switch (entity.getCachedState().get(Properties.HORIZONTAL_FACING)){
+				case NORTH:
+					model.setHeadRotation(0, 180, 0);
+					matrices.multiply(new Quaternion(0, 0, (float) Math.sin((double) 25 /2), (float) Math.cos((double) 25 /2)));
+					break;
+				case SOUTH:
+					model.setHeadRotation(0, 0, 0);
+					matrices.multiply(new Quaternion(0, 0, (float) Math.sin((double) 25 /2), (float) Math.cos((double) 25 /2)));
+					break;
+				case EAST:
+					model.setHeadRotation(0, 90, 0);
+					matrices.multiply(new Quaternion((float) Math.sin((double) 25 /2), 0, 0, (float) Math.cos((double) 25 /2)));
+					break;
+				case WEST:
+					model.setHeadRotation(0, 270, 0);
+					matrices.multiply(new Quaternion((float) Math.sin((double) 25 /2), 0, 0, (float) Math.cos((double) 25 /2)));
+					break;
+			}
+			model.render(matrices, vertexConsumers.getBuffer(getRL(entity.getOwner())), light, overlay, 1, 1, 1, 1);
+			matrices.pop();
 		}
-		model.render(matrices, vertexConsumers.getBuffer(getRL(entity.getOwner())), light, overlay, 1, 1, 1, 1);
-		matrices.pop();
 
 		int wd = MinecraftClient.getInstance().textRenderer.getWidth("Grave");
 

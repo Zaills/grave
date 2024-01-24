@@ -44,12 +44,6 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
 		return new GraveBlockEntity(pos, state);
 	}
-
-	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, ShapeContext ctx){
-		return VoxelShapes.cuboid(.25f, 0f, .25f, .75f, .5f, .75f);
-	}
-
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit){
 		if (!(player instanceof ServerPlayerEntity) || hand == Hand.OFF_HAND){

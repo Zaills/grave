@@ -1,5 +1,6 @@
 package net.zaills.grave;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
@@ -15,6 +16,7 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.zaills.grave.block.GraveBlock;
+import net.zaills.grave.block.Grave_notype;
 import net.zaills.grave.block.entity.GraveBlockEntity;
 import net.zaills.grave.config.GraveConfig;
 import org.quiltmc.loader.api.ModContainer;
@@ -23,9 +25,12 @@ import org.quiltmc.qsl.block.entity.api.QuiltBlockEntityTypeBuilder;
 import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 public class Grave implements ModInitializer {
 
-	public static  final GraveBlock GRAVE = new GraveBlock(QuiltBlockSettings.of(Material.DECORATION).strength(0.8f, -1f));
+	public static  final GraveBlock GRAVE = new Grave_notype(QuiltBlockSettings.of(Material.DECORATION).strength(0.8f, -1f));
+	//public static final Grave_suff GRAVE_SUFF = new Grave_suff(QuiltBlockSettings.of(Material.DECORATION).strength(0.8f, -1));
 	public static BlockEntityType<GraveBlockEntity> GRAVE_ENTITY;
 
 	public static final GraveConfig CONFIG = GraveConfig.createAndLoad();
@@ -34,6 +39,7 @@ public class Grave implements ModInitializer {
 	public void onInitialize(ModContainer mod) {
 		LoggerFactory.getLogger("grave").info("Grave Initializing");
 		Registry.register(Registry.BLOCK, new Identifier("grave", "grave"), GRAVE);
+		//Registry.register(Registry.BLOCK, new Identifier("grave", "grave_hand"), GRAVE_SUFF);
 		GRAVE_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "grave:grave", QuiltBlockEntityTypeBuilder.create(GraveBlockEntity::new, GRAVE).build(null));
 	}
 
@@ -42,12 +48,15 @@ public class Grave implements ModInitializer {
 			return;
 		BlockPos bp;
 
+		//type_grave(world.getBlockState(new BlockPos(pos)).getBlock());
+
 		if (pos.y - 1 <= world.getDimension().minY()) {
 			bp = new BlockPos(new BlockPos(pos.x, world.getDimension().minY(), pos.z));
 		}
 		else {
 			bp = new BlockPos(pos.x, pos.y - 1, pos.z);
 		}
+
 
 		DefaultedList<ItemStack> inv = DefaultedList.of();
 		inv.addAll(player.getInventory().main);
@@ -58,13 +67,16 @@ public class Grave implements ModInitializer {
 
 		for (BlockPos gP : BlockPos.iterateOutwards(bp.add(new Vec3i(0, 1, 0)), 5, 5, 5)){
 			if (bp.getY() > world.getDimension().minY() || bp.getY() < world.getDimension().height() - world.getDimension().minY()){
-				BlockState gS = Grave.GRAVE.getDefaultState().with(Properties.HORIZONTAL_FACING, player.getHorizontalFacing());
+				BlockState gS = GRAVE.getDefaultState().with(Properties.HORIZONTAL_FACING, player.getHorizontalFacing());
 
+				gP = place_top(gP, world);
 				placed = world.setBlockState(gP, gS);
 				GraveBlockEntity graveBlockEntity = new GraveBlockEntity(gP, gS);
 				graveBlockEntity.setInv(inv);
 				graveBlockEntity.setOwner(player.getGameProfile());
 				graveBlockEntity.setXp(player.totalExperience);
+				graveBlockEntity.setLocation(gP);
+				graveBlockEntity.setType(get_type(world.getBlockState(new BlockPos(pos)).getBlock()));
 				world.addBlockEntity(graveBlockEntity);
 
 				graveBlockEntity.markDirty();
@@ -84,5 +96,22 @@ public class Grave implements ModInitializer {
 		if (!placed){
 			player.getInventory().dropAll();
 		}
+	}
+
+	static int get_type(Block bl){
+		if (!Objects.equals(bl.getName().getString(), "Air")){
+			return 1;
+		}
+		return 0;
+	}
+
+	static BlockPos place_top(BlockPos pos, World world){
+		BlockPos npos = pos;
+		while(!Objects.equals(world.getBlockState(new BlockPos(npos)).getBlock().getName().getString(), "Air")){
+			npos = new BlockPos(npos.getX(), npos.getY() + 1, npos.getZ());
+			if (npos.getY() > world.getDimension().height())
+				return pos;
+		}
+		return npos;
 	}
 }
