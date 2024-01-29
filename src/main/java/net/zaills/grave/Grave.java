@@ -54,15 +54,12 @@ public class Grave implements ModInitializer {
 	public static void Place(World world, Vec3d pos, PlayerEntity player){
 		if (world.isClient)
 			return;
-		BlockPos bp;
+
+		BlockPos bp = new BlockPos(pos.x, pos.y - 1, pos.z);
 
 		if (pos.y - 1 <= world.getDimension().minY()) {
 			bp = new BlockPos(new BlockPos(pos.x, world.getDimension().minY(), pos.z));
 		}
-		else {
-			bp = new BlockPos(pos.x, pos.y - 1, pos.z);
-		}
-
 
 		DefaultedList<ItemStack> inv = DefaultedList.of();
 		inv.addAll(player.getInventory().main);
@@ -103,9 +100,8 @@ public class Grave implements ModInitializer {
 			}
 		}
 
-		if (!placed){
+		if (!placed)
 			player.getInventory().dropAll();
-		}
 	}
 
 	static int get_type(Block bl){

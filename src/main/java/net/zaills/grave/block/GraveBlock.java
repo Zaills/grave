@@ -207,7 +207,6 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 		BlockEntity bE = world.getBlockEntity(pos);
 
 		if (!(bE instanceof GraveBlockEntity GbE)) return;
-
 		GbE.markDirty();
 
 		if (CONFIG.Priorities_Inv())
