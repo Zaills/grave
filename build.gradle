@@ -15,17 +15,14 @@ repositories {
 	// for more information about repositories.
 	//owo-lib
 	maven { url 'https://maven.wispforest.io' }
-
-	// Needed to retrieve Cloth Config Lite for Omega Config in development environments.
-	maven {
-		name = "Shedaniel's Maven"
-		url = "https://maven.shedaniel.me/"
-	}
-
 	// Optional dependency for Mod Menu - recommended for viewing your screen in development
 	maven {
 		name = "TerraformersMC"
 		url = "https://maven.terraformersmc.com/releases/"
+	}
+	maven {
+		name = "Ladysnake Libs"
+		url = 'https://maven.ladysnake.org/releases'
 	}
 }
 
@@ -58,6 +55,8 @@ dependencies {
 	include "io.wispforest:owo-sentinel:${project.owo_version}"
 	//mod menu
 	modRuntimeOnly ("com.terraformersmc:modmenu:${project.modmenu_version}") // 3.0.1 for 1.18.1
+	//trinkets
+	modImplementation "dev.emi:trinkets:${trinkets_version}"
 }
 
 processResources {

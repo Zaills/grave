@@ -20,12 +20,11 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.zaills.grave.Grave;
 import net.zaills.grave.block.entity.GraveBlockEntity;
+import net.zaills.grave.compatibility.TrinketsCompat;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -122,11 +121,15 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 			pE.getInventory().insertStack(openslots.get(i), check.get(i));
 		}
 
+		for (TrinketsCompat trinkets : Grave.trinketsMod){
+			check.addAll(trinkets.getInv(pE));
+		}
 
 		DefaultedList<ItemStack> dropinv = DefaultedList.of();
 		dropinv.addAll(check.subList(openslots.size(), check.size()));
 		ItemScatterer.spawn(world, pos, dropinv);
 	}
+
 	public void RetrieveGraveGRV(PlayerEntity pE, World world, BlockPos pos, GraveBlockEntity GbE){
 		DefaultedList<ItemStack> inv = GbE.getInv();
 		DefaultedList<ItemStack> replace_inv = DefaultedList.of();
@@ -135,6 +138,9 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 		replace_inv.addAll(pE.getInventory().armor);
 		replace_inv.addAll(pE.getInventory().offHand);
 
+		for (TrinketsCompat trinkets : Grave.trinketsMod){
+			replace_inv.addAll(trinkets.getInv(pE));
+		}
 		pE.getInventory().clear();
 
 		List<ItemStack> armor = inv.subList(36, 40);
@@ -142,11 +148,9 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 			EquipmentSlot eS = MobEntity.getPreferredEquipmentSlot(iS);
 			pE.equipStack(eS, iS);
 		}
-
 		pE.equipStack(EquipmentSlot.OFFHAND, inv.get(40));
 
 		List<ItemStack> pI = inv.subList(0, 36);
-
 		for (int i = 0; i < pI.size(); i++){
 			pE.getInventory().insertStack(i, pI.get(i));
 		}
@@ -173,6 +177,8 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 			extra.add(replace_inv.get(40));
 
 		extra.addAll(replace_inv.subList(0, 36));
+		if (replace_inv.size() > 41)
+			extra.addAll(replace_inv.subList(41, replace_inv.size()));
 
 		openSlots.clear();
 		for (int i = 0; i < pE.getInventory().main.size(); i++){
@@ -186,6 +192,12 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 
 		DefaultedList<ItemStack> drop = DefaultedList.of();
 		drop.addAll(extra.subList(openSlots.size(), extra.size()));
+
+		int offset = 41;
+		for (TrinketsCompat trinketsCompat : Grave.trinketsMod){
+			trinketsCompat.setInv(inv.subList(offset, offset + trinketsCompat.getInvSize(pE)), pE);
+			offset += trinketsCompat.getInvSize(pE);
+		}
 
 		ItemScatterer.spawn(world, pos, drop);
 	}

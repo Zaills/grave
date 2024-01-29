@@ -18,13 +18,16 @@ import net.minecraft.world.World;
 import net.zaills.grave.block.GraveBlock;
 import net.zaills.grave.block.Grave_notype;
 import net.zaills.grave.block.entity.GraveBlockEntity;
+import net.zaills.grave.compatibility.TrinketsCompat;
 import net.zaills.grave.config.GraveConfig;
 import org.quiltmc.loader.api.ModContainer;
+import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.block.entity.api.QuiltBlockEntityTypeBuilder;
 import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Grave implements ModInitializer {
@@ -34,11 +37,18 @@ public class Grave implements ModInitializer {
 
 	public static final GraveConfig CONFIG = GraveConfig.createAndLoad();
 
+	public static final ArrayList<TrinketsCompat> trinketsMod = new ArrayList<>();
+
 	@Override
 	public void onInitialize(ModContainer mod) {
 		LoggerFactory.getLogger("grave").info("Grave Initializing");
 		Registry.register(Registry.BLOCK, new Identifier("grave", "grave"), GRAVE);
 		GRAVE_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "grave:grave", QuiltBlockEntityTypeBuilder.create(GraveBlockEntity::new, GRAVE).build(null));
+
+		if (QuiltLoader.isModLoaded("trinkets"))
+			trinketsMod.add(new TrinketsCompat());
+
+		trinketsMod.addAll(QuiltLoader.getEntrypoints("grave", TrinketsCompat.class));
 	}
 
 	public static void Place(World world, Vec3d pos, PlayerEntity player){
@@ -59,6 +69,9 @@ public class Grave implements ModInitializer {
 		inv.addAll(player.getInventory().armor);
 		inv.addAll(player.getInventory().offHand);
 
+		for (TrinketsCompat trinkmods : Grave.trinketsMod)
+			inv.addAll(trinkmods.getInv(player));
+
 		boolean placed = false;
 
 		for (BlockPos gP : BlockPos.iterateOutwards(bp.add(new Vec3i(0, 1, 0)), 5, 5, 5)){
@@ -70,7 +83,6 @@ public class Grave implements ModInitializer {
 				GraveBlockEntity graveBlockEntity = new GraveBlockEntity(gP, gS);
 				graveBlockEntity.setInv(inv);
 				graveBlockEntity.setOwner(player.getGameProfile());
-				System.out.println("player game Profile: " + player.getGameProfile());
 				graveBlockEntity.setXp(player.totalExperience);
 				graveBlockEntity.setLocation(gP);
 				graveBlockEntity.setType(get_type(world.getBlockState(new BlockPos(pos)).getBlock()));
@@ -83,8 +95,9 @@ public class Grave implements ModInitializer {
 				player.experienceLevel = 0;
 				player.experienceProgress = 0;
 
-				System.out.println(player.getName() + " grave spawn at: " + gP.getX() + ", " + gP.getY() + ", " + gP.getZ());
-				player.sendMessage(Text.of("Grave spawn at: " + gP.getX() + ", " + gP.getY() + ", " + gP.getZ()), false);
+				System.out.println(player.getName() + "'s grave spawn at: " + gP.getX() + ", " + gP.getY() + ", " + gP.getZ());
+				if (CONFIG.Get_grave_coord())
+					player.sendMessage(Text.of("Grave spawn at: " + gP.getX() + ", " + gP.getY() + ", " + gP.getZ()), false);
 
 				break;
 			}

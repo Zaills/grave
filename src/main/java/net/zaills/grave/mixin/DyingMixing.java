@@ -6,6 +6,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.world.World;
 import net.zaills.grave.Grave;
+import net.zaills.grave.compatibility.TrinketsCompat;
+import org.quiltmc.loader.api.QuiltLoader;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,6 +27,8 @@ public abstract class DyingMixing extends LivingEntity {
 	@Redirect(method = "dropInventory()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;dropAll()V"))
 	private void placeGrave(PlayerInventory instance) {
 		Grave.Place(this.world, this.getPos(), this.inventory.player);
+		if (QuiltLoader.isModLoaded("trinkets"))
+			TrinketsCompat.clearInv(this.inventory.player);
 	}
 
 }

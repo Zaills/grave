@@ -7,4 +7,5 @@ import io.wispforest.owo.config.annotation.Modmenu;
 @Config(name = "grave-config", wrapperName = "GraveConfig")
 public class GraveConfigModel {
 	public boolean Priorities_Inv = true;
+	public boolean Get_grave_coord = true;
 }
