@@ -18,16 +18,13 @@ import net.minecraft.world.World;
 import net.zaills.grave.block.GraveBlock;
 import net.zaills.grave.block.Grave_notype;
 import net.zaills.grave.block.entity.GraveBlockEntity;
-import net.zaills.grave.compatibility.TrinketsCompat;
 import net.zaills.grave.config.GraveConfig;
 import org.quiltmc.loader.api.ModContainer;
-import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.block.entity.api.QuiltBlockEntityTypeBuilder;
 import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class Grave implements ModInitializer {
@@ -37,18 +34,11 @@ public class Grave implements ModInitializer {
 
 	public static final GraveConfig CONFIG = GraveConfig.createAndLoad();
 
-	public static final ArrayList<TrinketsCompat> trinketsMod = new ArrayList<>();
-
 	@Override
 	public void onInitialize(ModContainer mod) {
 		LoggerFactory.getLogger("grave").info("Grave Initializing");
 		Registry.register(Registry.BLOCK, new Identifier("grave", "grave"), GRAVE);
 		GRAVE_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "grave:grave", QuiltBlockEntityTypeBuilder.create(GraveBlockEntity::new, GRAVE).build(null));
-
-		if (QuiltLoader.isModLoaded("trinkets"))
-			trinketsMod.add(new TrinketsCompat());
-
-		trinketsMod.addAll(QuiltLoader.getEntrypoints("grave", TrinketsCompat.class));
 	}
 
 	public static void Place(World world, Vec3d pos, PlayerEntity player){
@@ -65,9 +55,6 @@ public class Grave implements ModInitializer {
 		inv.addAll(player.getInventory().main);
 		inv.addAll(player.getInventory().armor);
 		inv.addAll(player.getInventory().offHand);
-
-		for (TrinketsCompat trinkmods : Grave.trinketsMod)
-			inv.addAll(trinkmods.getInv(player));
 
 		boolean placed = false;
 
