@@ -1,5 +1,6 @@
 package net.zaills.grave;
 
+import dev.emi.trinkets.api.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
@@ -9,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -45,6 +47,12 @@ public class Grave implements ModInitializer {
 		if (world.isClient)
 			return;
 
+		if (CONFIG.SCATTER()){
+			player.getInventory().dropAll();
+			return;
+		}
+
+
 		BlockPos bp = new BlockPos(pos.x, pos.y - 1, pos.z);
 
 		if (pos.y - 1 <= world.getDimension().minY()) {
@@ -55,6 +63,8 @@ public class Grave implements ModInitializer {
 		inv.addAll(player.getInventory().main);
 		inv.addAll(player.getInventory().armor);
 		inv.addAll(player.getInventory().offHand);
+		for (Pair<SlotReference, ItemStack> pair : TrinketsApi.getTrinketComponent(player).get().getAllEquipped())
+			inv.add(pair.getRight());
 
 		boolean placed = false;
 

@@ -117,6 +117,11 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 		check.addAll(inv.subList(0, 36));
 		for (int i = 0; i < openslots.size(); i++){
 			pE.getInventory().insertStack(openslots.get(i), check.get(i));
+
+		}
+
+		if (inv.size() > 40){
+			check.addAll(inv.subList(41, inv.size()));
 		}
 
 		DefaultedList<ItemStack> dropinv = DefaultedList.of();
@@ -124,67 +129,6 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 		ItemScatterer.spawn(world, pos, dropinv);
 	}
 
-	public void RetrieveGraveGRV(PlayerEntity pE, World world, BlockPos pos, GraveBlockEntity GbE){
-		DefaultedList<ItemStack> inv = GbE.getInv();
-		DefaultedList<ItemStack> replace_inv = DefaultedList.of();
-
-		replace_inv.addAll(pE.getInventory().main);
-		replace_inv.addAll(pE.getInventory().armor);
-		replace_inv.addAll(pE.getInventory().offHand);
-		pE.getInventory().clear();
-
-		List<ItemStack> armor = inv.subList(36, 40);
-		for (ItemStack iS : armor){
-			EquipmentSlot eS = MobEntity.getPreferredEquipmentSlot(iS);
-			pE.equipStack(eS, iS);
-		}
-		pE.equipStack(EquipmentSlot.OFFHAND, inv.get(40));
-
-		List<ItemStack> pI = inv.subList(0, 36);
-		for (int i = 0; i < pI.size(); i++){
-			pE.getInventory().insertStack(i, pI.get(i));
-		}
-
-		DefaultedList<ItemStack> extra = DefaultedList.of();
-		List<Integer> openSlots = new ArrayList<>();
-
-		for (int i = 0; i < pE.getInventory().armor.size(); i++){
-			if(pE.getInventory().armor.get(i) == ItemStack.EMPTY)
-				openSlots.add(i);
-		}
-
-		for (int i = 0; i<4; i++){
-			if (openSlots.contains(i)){
-				pE.equipStack(EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, i), replace_inv.subList(36, 40).get(i));
-			}
-			else
-				extra.add(replace_inv.subList(36, 40).get(i));
-		}
-
-		if (pE.getInventory().offHand.get(0) == ItemStack.EMPTY)
-			pE.equipStack(EquipmentSlot.OFFHAND, replace_inv.get(40));
-		else
-			extra.add(replace_inv.get(40));
-
-		extra.addAll(replace_inv.subList(0, 36));
-		if (replace_inv.size() > 41)
-			extra.addAll(replace_inv.subList(41, replace_inv.size()));
-
-		openSlots.clear();
-		for (int i = 0; i < pE.getInventory().main.size(); i++){
-			if(pE.getInventory().main.get(i) == ItemStack.EMPTY)
-				openSlots.add(i);
-		}
-
-		for (int i = 0; i < openSlots.size(); i++){
-			pE.getInventory().insertStack(openSlots.get(i), extra.get(i));
-		}
-
-		DefaultedList<ItemStack> drop = DefaultedList.of();
-		drop.addAll(extra.subList(openSlots.size(), extra.size()));
-
-		ItemScatterer.spawn(world, pos, drop);
-	}
 	public void RetrieveGrave(PlayerEntity pE, World world, BlockPos pos){
 		if (world.isClient) return;
 
@@ -193,10 +137,10 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 		if (!(bE instanceof GraveBlockEntity GbE)) return;
 		GbE.markDirty();
 
-		if (CONFIG.Priorities_Inv())
+		if (CONFIG.Grave_Inv())
 			RetrieveGraveINV(pE, world, pos, GbE);
 		else
-			RetrieveGraveGRV(pE, world, pos, GbE);
+			ItemScatterer.spawn(world, pos, GbE.getInv());
 
 		//xp
 		pE.addExperience(((GraveBlockEntity) bE).getXp());

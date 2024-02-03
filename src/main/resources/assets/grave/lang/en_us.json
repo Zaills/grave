@@ -1,6 +1,8 @@
 {
   "text.config.grave-config.title" : "Grave Option",
-  "text.config.grave-config.option.Priorities_Inv" : "Priorities Player Inventory",
-  "text.config.grave-config.option.Priorities_Inv.tooltip" : "If false the grave replace you're inventory and drop the extra\nIf true you'll keep everything you have and the item that cannot go in drop",
-  "text.config.grave-config.option.Get_grave_coord" : "Give grave coord when dying"
+  "text.config.grave-config.option.Grave_Inv" : "Get Grave in Inv",
+  "text.config.grave-config.option.Grave_Inv.tooltip" : "If false the item in grave will be scatter\nIf true it'll will go in your inv",
+  "text.config.grave-config.option.Get_grave_coord" : "Give grave coord when dying",
+  "text.config.grave-config.option.SCATTER" : "SCATTER",
+  "text.config.grave-config.option.SCATTER.tooltip" : "The one and only 100% bug free option !\nYea it just deactivate your grave"
 }
