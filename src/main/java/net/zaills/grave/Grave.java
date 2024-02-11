@@ -47,12 +47,6 @@ public class Grave implements ModInitializer {
 		if (world.isClient)
 			return;
 
-		if (CONFIG.SCATTER()){
-			player.getInventory().dropAll();
-			return;
-		}
-
-
 		BlockPos bp = new BlockPos(pos.x, pos.y - 1, pos.z);
 
 		if (pos.y - 1 <= world.getDimension().minY()) {

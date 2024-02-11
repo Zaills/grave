@@ -26,9 +26,11 @@ public abstract class DyingMixing extends LivingEntity {
 
 	@Inject(method = "dropInventory", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;dropInventory()V", shift = At.Shift.BEFORE))
 	private void placeGrave(CallbackInfo ci) {
-		Grave.Place(this.world, this.getPos(), this.inventory.player);
-		TrinketsApi.getTrinketComponent(this.inventory.player).get().getInventory().clear();
-		this.inventory.clear();
+		if (!Grave.CONFIG.SCATTER()){
+			Grave.Place(this.world, this.getPos(), this.inventory.player);
+			TrinketsApi.getTrinketComponent(this.inventory.player).get().getInventory().clear();
+			this.inventory.clear();
+		}
 	}
 
 }

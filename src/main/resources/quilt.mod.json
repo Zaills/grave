@@ -5,10 +5,10 @@
 		"id": "grave",
 		"version": "${version}",
 		"metadata": {
-			"name": "Grave",
-			"description": "Trying to do an grave mod.",
+			"name": "GraveMod",
+			"description": "You'll thanks me later.",
 			"contributors": {
-				"Zaills": "Owner",
+				"Zaills": "Owner & coding",
 				"Milkfur": "Grave model"
 			},
 			"contact": {
