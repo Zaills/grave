@@ -62,22 +62,23 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 		return new GraveBlockEntity(pos, state);
 	}
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit){
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (!(player instanceof ServerPlayerEntity) || hand == Hand.OFF_HAND){
 			return player.isSneaking() ? ActionResult.PASS : ActionResult.FAIL;
 		}
 
 		BlockEntity bE = world.getBlockEntity(pos);
-		if (bE instanceof GraveBlockEntity graveBlockEntity && graveBlockEntity.getOwner().getId().equals(player.getGameProfile().getId())) {
-			if (player.isSneaking()){
-				player.sendMessage(Text.of(player.getEntityName() + "'s Grave"), true);
-			return ActionResult.PASS;
-		}
-			else
+		GraveBlockEntity graveBlockEntity = (GraveBlockEntity) bE;
+		if (graveBlockEntity.getOwner().getId().equals(player.getGameProfile().getId())) {
+			if (player.isSneaking()) {
+				player.sendMessage(Text.of(graveBlockEntity.getOwner().getName() + "'s Grave"), true);
+				return ActionResult.PASS;
+			} else {
 				RetrieveGrave(player, world, pos);
-		}
-		else
-			player.sendMessage(Text.of(player.getEntityName() + "'s Grave"), true);
+			} 
+		} else {
+			player.sendMessage(Text.of(graveBlockEntity.getOwner().getName() + "'s Grave"), true);
+		} 
 		return player.isSneaking() ? ActionResult.PASS : ActionResult.SUCCESS;
 	}
 
