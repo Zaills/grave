@@ -16,21 +16,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerEntity.class)
 public abstract class DyingMixing extends LivingEntity {
-	@Shadow
-	@Final
-	private PlayerInventory inventory;
-
 	protected DyingMixing(EntityType<? extends LivingEntity> type, World world){
 		super(type, world);
 	}
 
 	@Inject(method = "dropInventory", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;dropInventory()V", shift = At.Shift.BEFORE))
 	private void placeGrave(CallbackInfo ci) {
-		if (!Grave.CONFIG.SCATTER()){
-			Grave.Place(this.world, this.getPos(), this.inventory.player);
-			TrinketsApi.getTrinketComponent(this.inventory.player).get().getInventory().clear();
-			this.inventory.clear();
+		if (Grave.CONFIG.SCATTER()) {
+			return;
 		}
+
+		final PlayerEntity player = (PlayerEntity) (Object) this;
+
+		Grave.Place(this.world, this.getPos().subtract(0, 1, 0), player);
+		TrinketsApi.getTrinketComponent(player).get().getInventory().clear();
+		player.getInventory().clear();
 	}
 
 }

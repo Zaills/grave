@@ -15,8 +15,6 @@ import net.minecraft.util.math.BlockPos;
 import net.zaills.grave.Grave;
 import org.jetbrains.annotations.Nullable;
 
-import static net.minecraft.enchantment.EnchantmentHelper.createNbt;
-
 public class GraveBlockEntity extends BlockEntity {
 	private DefaultedList<ItemStack> inv;
 	private	int xp;
