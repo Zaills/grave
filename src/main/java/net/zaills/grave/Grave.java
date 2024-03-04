@@ -22,7 +22,6 @@ import net.zaills.grave.block.Grave_notype;
 import net.zaills.grave.block.entity.GraveBlockEntity;
 import net.zaills.grave.config.GraveConfig;
 
-import org.apache.commons.compress.compressors.lz77support.LZ77Compressor.Block.BlockType;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.block.entity.api.QuiltBlockEntityTypeBuilder;
