@@ -50,7 +50,7 @@ public class Grave implements ModInitializer {
 		}
 
 		final int worldMin = world.getDimension().minY();
-		final int worldMax = world.getDimension().height() - worldMin;
+		final int worldMax = world.getDimension().height() + worldMin - 1; 
 
 		// Create a default grave state for placing
 		BlockState graveState = GRAVE
