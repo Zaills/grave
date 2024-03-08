@@ -104,6 +104,11 @@ public class Grave implements ModInitializer {
 			graveBlockEntity.setType(get_type(world.getBlockState(placingBlock).getBlock()));
 			graveBlockEntity.markDirty();
 			
+			//remove the xp
+			player.totalExperience = 0;
+			player.experienceLevel = 0;
+			player.experienceProgress = 0;
+			
 			world.addBlockEntity(graveBlockEntity);
 
 			System.out.println(player.getName() + "'s grave spawn at: " + placingBlock.getX() + ", " + placingBlock.getY() + ", " + placingBlock.getZ());
