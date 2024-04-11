@@ -6,6 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
@@ -14,7 +15,6 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.zaills.grave.block.GraveBlock;
@@ -25,6 +25,7 @@ import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.block.entity.api.QuiltBlockEntityTypeBuilder;
 import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
+import org.quiltmc.qsl.item.setting.api.QuiltItemSettings;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
@@ -33,6 +34,7 @@ import java.util.Optional;
 public class Grave implements ModInitializer {
 
 	public static final GraveBlock GRAVE = new Grave_notype(QuiltBlockSettings.of(Material.DECORATION).strength(0.8f, -1f));
+	public static final BlockItem GRAVE_ITEM = new BlockItem(GRAVE, new QuiltItemSettings());
 	public static BlockEntityType<GraveBlockEntity> GRAVE_ENTITY;
 
 	public static final GraveConfig CONFIG = GraveConfig.createAndLoad();
@@ -41,6 +43,7 @@ public class Grave implements ModInitializer {
 	public void onInitialize(ModContainer mod) {
 		LoggerFactory.getLogger("grave").info("Grave Initializing");
 		Registry.register(Registry.BLOCK, new Identifier("grave", "grave"), GRAVE);
+		Registry.register(Registry.ITEM, new Identifier("grave", "grave"), GRAVE_ITEM);
 		GRAVE_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "grave:grave", QuiltBlockEntityTypeBuilder.create(GraveBlockEntity::new, GRAVE).build(null));
 	}
 
@@ -50,7 +53,7 @@ public class Grave implements ModInitializer {
 		}
 
 		final int worldMin = world.getDimension().minY();
-		final int worldMax = world.getDimension().height() + worldMin - 1; 
+		final int worldMax = world.getDimension().height() + worldMin - 1;
 
 		// Create a default grave state for placing
 		BlockState graveState = GRAVE
@@ -63,7 +66,7 @@ public class Grave implements ModInitializer {
 		inv.addAll(player.getInventory().main);
 		inv.addAll(player.getInventory().armor);
 		inv.addAll(player.getInventory().offHand);
-		
+
 		for (Pair<SlotReference, ItemStack> pair : TrinketsApi.getTrinketComponent(player).get().getAllEquipped()) {
 			inv.add(pair.getRight());
 		}
@@ -95,7 +98,7 @@ public class Grave implements ModInitializer {
 				continue;
 			}
 
-			// Set block data 
+			// Set block data
 			GraveBlockEntity graveBlockEntity = new GraveBlockEntity(placingBlock, graveState);
 			graveBlockEntity.setInv(inv);
 			graveBlockEntity.setOwner(player.getGameProfile());
@@ -103,12 +106,12 @@ public class Grave implements ModInitializer {
 			graveBlockEntity.setLocation(placingBlock);
 			graveBlockEntity.setType(get_type(world.getBlockState(placingBlock).getBlock()));
 			graveBlockEntity.markDirty();
-			
+
 			//remove the xp
 			player.totalExperience = 0;
 			player.experienceLevel = 0;
 			player.experienceProgress = 0;
-			
+
 			world.addBlockEntity(graveBlockEntity);
 
 			System.out.println(player.getName() + "'s grave spawn at: " + placingBlock.getX() + ", " + placingBlock.getY() + ", " + placingBlock.getZ());

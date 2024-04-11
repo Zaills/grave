@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "C",
+    "B"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:stone"
+    },
+    "B": {
+      "item": "minecraft:bone"
+    }
+  },
+  "result": {
+    "item": "grave:grave"
+  }
+}

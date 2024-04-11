@@ -7,6 +7,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static net.zaills.grave.Grave.CONFIG;
+import static net.zaills.grave.Grave.GRAVE_ITEM;
 
 public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProvider, Waterloggable {
 
@@ -37,6 +39,14 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 	public GraveBlock(Settings settings){
 		super(settings);
 		setDefaultState(this.stateManager.getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.NORTH).with(Properties.WATERLOGGED, false));
+	}
+
+	@Nullable
+	@Override
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		BlockPos blockPos = ctx.getBlockPos();
+		FluidState fluidState = ctx.getWorld().getFluidState(blockPos);
+		return this.getDefaultState().with(FACING, ctx.getPlayerFacing()).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
 	}
 
 	@Override
@@ -69,22 +79,25 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 
 		BlockEntity bE = world.getBlockEntity(pos);
 		GraveBlockEntity graveBlockEntity = (GraveBlockEntity) bE;
+		assert graveBlockEntity != null;
+		if (graveBlockEntity.getOwner() == null)
+			return ActionResult.FAIL;
 		if (graveBlockEntity.getOwner().getId().equals(player.getGameProfile().getId())) {
 			if (player.isSneaking()) {
 				player.sendMessage(Text.of(graveBlockEntity.getOwner().getName() + "'s Grave"), true);
 				return ActionResult.PASS;
 			} else {
 				RetrieveGrave(player, world, pos);
-			} 
+			}
 		} else {
 			player.sendMessage(Text.of(graveBlockEntity.getOwner().getName() + "'s Grave"), true);
-		} 
+		}
 		return player.isSneaking() ? ActionResult.PASS : ActionResult.SUCCESS;
 	}
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player){
-		dropInv(world, pos);
+		dropInv(world, pos, player);
 		super.onBreak(world, pos, state, player);
 	}
 
@@ -149,20 +162,26 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 		world.removeBlock(pos, false);
 	}
 
-	public void dropInv(World world, BlockPos pos){
+	public void dropInv(World world, BlockPos pos, PlayerEntity player){
 		if(world.isClient) return;
 
-		BlockEntity bE = world.getBlockEntity(pos);
+		BlockEntity blockEntity = world.getBlockEntity(pos);
 
-		if (!(bE instanceof GraveBlockEntity GbE)) return;
+		if (!(blockEntity instanceof GraveBlockEntity graveBlockEntity)) return;
 
-		GbE.markDirty();
+		graveBlockEntity.markDirty();
 
-		if (GbE.getInv() == null) return;
+		if (graveBlockEntity.getOwner() == null){
+			if (player.isCreative()) return;
+			DefaultedList<ItemStack> inv = DefaultedList.ofSize(1, GRAVE_ITEM.asItem().getDefaultStack());
+			ItemScatterer.spawn(world, pos, inv);
+			return;
+		}
+		if (graveBlockEntity.getInv() == null) return;
 
-		ItemScatterer.spawn(world, pos, GbE.getInv());
+		ItemScatterer.spawn(world, pos, graveBlockEntity.getInv());
 
-		((GraveBlockEntity) bE).setInv(DefaultedList.copyOf(ItemStack.EMPTY));
+		((GraveBlockEntity) blockEntity).setInv(DefaultedList.copyOf(ItemStack.EMPTY));
 
 	}
 
