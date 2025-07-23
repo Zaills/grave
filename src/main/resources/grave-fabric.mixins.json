@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"package": "net.zaills.gravefabric.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"DyingMixing"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}
