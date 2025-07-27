@@ -47,67 +47,84 @@ public abstract class DyingMixing extends LivingEntity {
 			return;
 		}
 
-		final int worldMin = world.getDimension().minY();
-		final int worldMax = world.getDimension().height() + worldMin - 1;
+		BlockState graveState = getGraveType(player);
 
-		BlockState graveState = GraveFabric.GRAVE
-				.getDefaultState()
-				.with(Properties.HORIZONTAL_FACING, player.getHorizontalFacing());
+		BlockPos gravePos = getGravePos(pos, world);
 
-		BlockPos originBlock = new BlockPos((int) pos.x, (int) ((pos.y < worldMin) ? worldMin : pos.y), (int) pos.z);
+		if (gravePos == null || !world.setBlockState(gravePos, graveState)) {
+			// Unable to place grave anywhere (skill issue), drop items
+			player.getInventory().dropAll();
+			return;
+		}
 
 		DefaultedList<ItemStack> inv = DefaultedList.of();
 		inv.addAll(player.getInventory().main);
 		inv.addAll(player.getInventory().armor);
 		inv.addAll(player.getInventory().offHand);
 
+		// Set block data
+		GraveBlockEntity graveBlockEntity = new GraveBlockEntity(gravePos, graveState);
+		graveBlockEntity.setInv(inv);
+		graveBlockEntity.setOwner(player.getGameProfile());
+		graveBlockEntity.setXp(player.totalExperience);
+		graveBlockEntity.markDirty();
+
+		//remove the xp
+		player.totalExperience = 0;
+		player.experienceLevel = 0;
+		player.experienceProgress = 0;
+
+		world.addBlockEntity(graveBlockEntity);
+
+		System.out.println(player.getName() + "'s grave spawn at: " + gravePos.getX() + ", " + gravePos.getY() + ", " + gravePos.getZ());
+		if (CONFIG.Get_grave_coord()) {
+			player.sendMessage(Text.of("Grave spawn at: " + gravePos.getX() + ", " + gravePos.getY() + ", " + gravePos.getZ()), false);
+		}
+	}
+
+	// Modify later to add more type of grave
+	@Unique
+	private static BlockState getGraveType(PlayerEntity player){
+		return GraveFabric.BASE_GRAVE
+				.getDefaultState()
+				.with(Properties.HORIZONTAL_FACING, player.getHorizontalFacing());
+	}
+
+	@Unique
+	private static BlockPos getGravePos(Vec3d pos, World world) {
+		final int worldMin = world.getDimension().minY();
+		final int worldMax = world.getDimension().height() + worldMin - 1;
+
+		BlockPos originBlock = new BlockPos((int) pos.x, (int) ((pos.y < worldMin) ? worldMin : pos.y), (int) pos.z);
+
+		Optional<BlockPos> airBlock = getBlockTop(originBlock, world, worldMax);
+		if (airBlock.isPresent()){
+			return airBlock.get();
+		}
+
 		for (BlockPos offsetBlock : BlockPos.iterateOutwards(originBlock, 5, 5, 5)){
 			// Not within world bounds,
 			if (worldMin > offsetBlock.getY() || offsetBlock.getY() > worldMax) {
 				continue;
-			}
+		}
 			// Not within the world border
 			if (!world.getWorldBorder().contains(offsetBlock)) {
 				continue;
-			}
+		}
 
 			// Find a block of air in a column above the offset block
-			Optional<BlockPos> airBlock = place_top(offsetBlock, world, worldMax);
+			airBlock = getBlockTop(offsetBlock, world, worldMax);
 			if (airBlock.isEmpty()){
 				continue;
-			}
-
-			BlockPos placingBlock = airBlock.get();
-			if(!world.setBlockState(placingBlock, graveState)){
-				continue;
-			}
-
-			// Set block data
-			GraveBlockEntity graveBlockEntity = new GraveBlockEntity(placingBlock, graveState);
-			graveBlockEntity.setInv(inv);
-			graveBlockEntity.setOwner(player.getGameProfile());
-			graveBlockEntity.setXp(player.totalExperience);
-			graveBlockEntity.markDirty();
-
-			//remove the xp
-			player.totalExperience = 0;
-			player.experienceLevel = 0;
-			player.experienceProgress = 0;
-
-			world.addBlockEntity(graveBlockEntity);
-
-			System.out.println(player.getName() + "'s grave spawn at: " + placingBlock.getX() + ", " + placingBlock.getY() + ", " + placingBlock.getZ());
-			if (CONFIG.Get_grave_coord()) {
-				player.sendMessage(Text.of("Grave spawn at: " + placingBlock.getX() + ", " + placingBlock.getY() + ", " + placingBlock.getZ()), false);
-			}
-			return;
 		}
-		// Unable to place grave anywhere (skill issue), drop items
-		player.getInventory().dropAll();
+
+			return airBlock.get();
+		}
+		return null;
 	}
 
 	@Unique
-	private static Optional<BlockPos> place_top(BlockPos pos, World world, int worldMax) {
+	private static Optional<BlockPos> getBlockTop(BlockPos pos, World world, int worldMax) {
 		BlockPos npos = pos;
 		while (!world.getBlockState(npos).isAir()){
 			npos = npos.up();
