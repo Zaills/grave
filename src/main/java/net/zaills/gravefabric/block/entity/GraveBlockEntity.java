@@ -3,6 +3,7 @@ package net.zaills.gravefabric.block.entity;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.component.ComponentsAccess;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -69,6 +70,11 @@ public class GraveBlockEntity extends BlockEntity {
 		if (nbt.contains("OwnerId") && nbt.contains("OwnerName")) {
 			this.Owner = new GameProfile(UUID.fromString(nbt.getString("OwnerId")), nbt.getString("OwnerName"));
 		}
+	}
+
+	@Override
+	protected void readComponents(ComponentsAccess components) {
+		super.readComponents(components);
 	}
 
 	@Override

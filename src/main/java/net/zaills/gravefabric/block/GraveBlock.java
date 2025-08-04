@@ -15,6 +15,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
@@ -128,24 +129,25 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 		//Armor
 		List<ItemStack> armor = inv.subList(36, 40);
 		for (int i = 0; i < 4; i++){
+			EquipmentSlot slot = playerEntity.getPreferredEquipmentSlot(armor.get(i));
 			if (!armor.get(i).isEmpty()){
-				if (playerEntity.getInventory().getArmorStack(i).isEmpty())
-					playerEntity.equipStack(playerEntity.getPreferredEquipmentSlot(armor.get(i)), armor.get(i));
+				if (playerEntity.canEquip(armor.get(1), slot)) {
+					playerEntity.equipStack(slot, armor.get(i));
+				}
 				else
-
 					check.add(armor.get(i));
 			}
 		}
 
 		//Offhand
-		if (playerEntity.getInventory().offHand.getFirst() == ItemStack.EMPTY)
+		if (playerEntity.getStackInHand(Hand.OFF_HAND).isEmpty())
 			playerEntity.equipStack(EquipmentSlot.OFFHAND, inv.get(40));
 		else
 			check.add(inv.get(40));
 
 		List<Integer> openslots = new ArrayList<>();
-		for (int i = 0; i <playerEntity.getInventory().main.size(); i++){
-			if(playerEntity.getInventory().main.get(i) == ItemStack.EMPTY)
+		for (int i = 0; i <playerEntity.getInventory().size(); i++){
+			if(playerEntity.getInventory().getStack(i) == ItemStack.EMPTY)
 				openslots.add(i);
 		}
 
