@@ -7,6 +7,7 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -21,8 +22,16 @@ public class GraveFabric implements ModInitializer {
 
 	public static final GraveConfig CONFIG = GraveConfig.createAndLoad();
 
-	public static final Block BASE_GRAVE = new BaseGraveBlock(AbstractBlock.Settings.create().strength(0.8f, -1f));
-	public static final BlockItem GRAVE_ITEM = new BlockItem(BASE_GRAVE, new net.minecraft.item.Item.Settings());
+	public static final Block BASE_GRAVE = new BaseGraveBlock(AbstractBlock.Settings.create()
+			.strength(0.8f, -1f)
+			.registryKey(RegistryKey.of(RegistryKeys.BLOCK,
+					Identifier.of(MOD_ID, "grave")))
+			);
+	public static final BlockItem GRAVE_ITEM = new BlockItem(BASE_GRAVE, new  Item.Settings()
+			.useBlockPrefixedTranslationKey()
+			.registryKey(RegistryKey.of(RegistryKeys.ITEM,
+					Identifier.of(MOD_ID, "grave")))
+			);
 	public static BlockEntityType<GraveBlockEntity> GRAVE_ENTITY;
 
 	@Override

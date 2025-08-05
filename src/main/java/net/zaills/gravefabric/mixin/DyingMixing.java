@@ -25,6 +25,7 @@ import static net.zaills.gravefabric.GraveFabric.CONFIG;
 
 @Mixin(PlayerEntity.class)
 public abstract class DyingMixing extends LivingEntity {
+
 	protected DyingMixing(EntityType<? extends LivingEntity> type, World world){
 		super(type, world);
 	}
@@ -58,9 +59,9 @@ public abstract class DyingMixing extends LivingEntity {
 		}
 
 		DefaultedList<ItemStack> inv = DefaultedList.of();
-		inv.addAll(player.getInventory().main);
-		inv.addAll(player.getInventory().armor);
-		inv.addAll(player.getInventory().offHand);
+		for (ItemStack itemStack : player.getInventory()) {
+			inv.add(itemStack);
+		}
 
 		// Set block data
 		GraveBlockEntity graveBlockEntity = new GraveBlockEntity(gravePos, graveState);

@@ -11,6 +11,8 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.zaills.gravefabric.GraveFabric;
@@ -59,16 +61,23 @@ public class GraveBlockEntity extends BlockEntity {
 		return this.Owner;
 	}
 
+
 	@Override
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readData(ReadView view) {
+		super.readData(view);
 
-		this.inv = DefaultedList.ofSize(nbt.getInt("ItemCount"), ItemStack.EMPTY);
-		Inventories.readNbt(nbt.getCompound("Items"), this.inv, registryLookup);
-		this.xp = nbt.getInt("XP");
+		this.inv = DefaultedList.ofSize(view.getInt("ItemCount", 0), ItemStack.EMPTY);
+		if (!this.inv.isEmpty()) {
+			Inventories.readData(view, this.inv);
+		}
+		this.xp = view.getInt("XP", 0);
 
-		if (nbt.contains("OwnerId") && nbt.contains("OwnerName")) {
-			this.Owner = new GameProfile(UUID.fromString(nbt.getString("OwnerId")), nbt.getString("OwnerName"));
+		String OwnerID = view.getString("OwnerId", null);
+		String OwnerName = view.getString("OwnerName", null);
+
+
+		if (OwnerID != null && OwnerName != null) {
+			this.Owner = new GameProfile(UUID.fromString(OwnerID), OwnerName);
 		}
 	}
 
@@ -77,17 +86,18 @@ public class GraveBlockEntity extends BlockEntity {
 		super.readComponents(components);
 	}
 
-	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
 
-		nbt.putInt("ItemCount", this.inv.size());
-		nbt.put("Items", Inventories.writeNbt(new NbtCompound(), this.inv, registryLookup));
-		nbt.putInt("XP", xp);
+	@Override
+	public void writeData(WriteView view) {
+		super.writeData(view);
+
+		view.putInt("ItemCount", this.inv.size());
+		Inventories.writeData(view, this.inv);
+		view.putInt("XP", xp);
 
 		if (Owner != null) {
-			nbt.putString("OwnerId", Owner.getId().toString());
-			nbt.putString("OwnerName", Owner.getName());
+			view.putString("OwnerId", Owner.getId().toString());
+			view.putString("OwnerName", Owner.getName());
 		}
 	}
 

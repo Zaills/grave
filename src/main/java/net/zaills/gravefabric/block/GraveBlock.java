@@ -15,7 +15,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
@@ -24,9 +23,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.zaills.gravefabric.block.entity.GraveBlockEntity;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static net.zaills.gravefabric.GraveFabric.CONFIG;
 import static net.zaills.gravefabric.GraveFabric.GRAVE_ITEM;
@@ -108,13 +104,13 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 
-		if (!(blockEntity instanceof GraveBlockEntity GbE)) return;
-		GbE.markDirty();
+		if (!(blockEntity instanceof GraveBlockEntity graveBlockEntity)) return;
+		graveBlockEntity.markDirty();
 
 		if (CONFIG.Grave_Inv())
-			RetrieveGraveINV(playerEntity, world, pos, GbE);
+			RetrieveGraveINV(playerEntity, world, pos, graveBlockEntity);
 		else
-			ItemScatterer.spawn(world, pos, GbE.getInv());
+			ItemScatterer.spawn(world, pos, graveBlockEntity.getInv());
 
 		//xp
 		playerEntity.addExperience(((GraveBlockEntity) blockEntity).getXp());
@@ -124,46 +120,28 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 
 	public void RetrieveGraveINV(PlayerEntity playerEntity, World world, BlockPos pos, GraveBlockEntity graveBlockEntity){
 		DefaultedList<ItemStack> inv = graveBlockEntity.getInv();
-		DefaultedList<ItemStack> check = DefaultedList.of();
+		DefaultedList<ItemStack> dropInv = DefaultedList.of();
 
-		//Armor
-		List<ItemStack> armor = inv.subList(36, 40);
-		for (int i = 0; i < 4; i++){
-			EquipmentSlot slot = playerEntity.getPreferredEquipmentSlot(armor.get(i));
-			if (!armor.get(i).isEmpty()){
-				if (playerEntity.canEquip(armor.get(1), slot)) {
-					playerEntity.equipStack(slot, armor.get(i));
-				}
-				else
-					check.add(armor.get(i));
+		for (ItemStack itemStack : inv){
+			EquipmentSlot slot = playerEntity.getPreferredEquipmentSlot(itemStack);
+			if (slot != EquipmentSlot.MAINHAND && playerEntity.canEquip(itemStack, slot)){
+				playerEntity.equipStack(slot, itemStack);
 			}
-		}
-
-		//Offhand
-		if (playerEntity.getStackInHand(Hand.OFF_HAND).isEmpty())
-			playerEntity.equipStack(EquipmentSlot.OFFHAND, inv.get(40));
-		else
-			check.add(inv.get(40));
-
-		List<Integer> openslots = new ArrayList<>();
-		for (int i = 0; i <playerEntity.getInventory().size(); i++){
-			if(playerEntity.getInventory().getStack(i) == ItemStack.EMPTY)
-				openslots.add(i);
-		}
-
-		check.addAll(inv.subList(0, 36));
-		for (int i = 0; i < openslots.size(); i++){
-			playerEntity.getInventory().insertStack(openslots.get(i), check.get(i));
+			else if (playerEntity.getInventory().getEmptySlot() != -1) {
+				playerEntity.getInventory().insertStack(itemStack);
+			}
+			else {
+				if (playerEntity.getInventory().getStack(40).isEmpty()){
+					playerEntity.getInventory().insertStack(40, itemStack);
+				}
+				else{
+					dropInv.add(itemStack);
+				}
+			}
 
 		}
 
-		if (inv.size() > 40){
-			check.addAll(inv.subList(41, inv.size()));
-		}
-
-		DefaultedList<ItemStack> dropinv = DefaultedList.of();
-		dropinv.addAll(check.subList(openslots.size(), check.size()));
-		ItemScatterer.spawn(world, pos, dropinv);
+		ItemScatterer.spawn(world, pos, dropInv);
 	}
 
 	public void dropInv(World world, BlockPos pos, PlayerEntity player){
