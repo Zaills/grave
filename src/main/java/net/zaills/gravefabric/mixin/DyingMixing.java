@@ -65,9 +65,9 @@ public abstract class DyingMixing extends LivingEntity {
 
 		// Set block data
 		GraveBlockEntity graveBlockEntity = new GraveBlockEntity(gravePos, graveState);
-		graveBlockEntity.setInv(inv);
-		graveBlockEntity.setOwner(player.getGameProfile());
-		graveBlockEntity.setXp(player.totalExperience);
+		graveBlockEntity.setSavedInventory(inv);
+		graveBlockEntity.setSavedOwner(player.getGameProfile());
+		graveBlockEntity.setSavedExperience(player.totalExperience);
 		graveBlockEntity.markDirty();
 
 		//remove the xp

@@ -24,9 +24,9 @@ public class GraveBlockEntityRenderer implements BlockEntityRenderer<GraveBlockE
 		matrices.push();
 		matrices.translate(0.5, 1.25, 0.5);
 
-		if (entity.getWorld() != null && entity.getOwner() != null) {
+		if (entity.getWorld() != null && entity.getSavedOwner() != null) {
 			int lightAbove = WorldRenderer.getLightmapCoordinates(entity.getWorld(), entity.getPos().up());
-			PlayerEntity player = entity.getWorld().getPlayerByUuid(entity.getOwner().getId());
+			PlayerEntity player = entity.getWorld().getPlayerByUuid(entity.getSavedOwner().getId());
 			EntityRenderDispatcher dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
 			if (player != null) {
 				player.limbAnimator.setSpeed(0.0f);

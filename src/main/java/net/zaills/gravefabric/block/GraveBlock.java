@@ -73,19 +73,19 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		GraveBlockEntity graveBlockEntity = (GraveBlockEntity) blockEntity;
 		assert graveBlockEntity != null;
-		if (graveBlockEntity.getOwner() == null)
+		if (graveBlockEntity.getSavedOwner() == null)
 			return ActionResult.FAIL;
 
-		if (graveBlockEntity.getOwner().getId().equals(player.getGameProfile().getId())) {
+		if (graveBlockEntity.getSavedOwner().getId().equals(player.getGameProfile().getId())) {
 			if (player.isSneaking()) {
-				player.sendMessage(Text.of(graveBlockEntity.getOwner().getName() + "'s Grave"), true);
+				player.sendMessage(Text.of(graveBlockEntity.getSavedOwner().getName() + "'s Grave"), true);
 				return ActionResult.PASS;
 			} else {
 				RetrieveGrave(player, world, pos);
 			}
 
 		} else {
-			player.sendMessage(Text.of(graveBlockEntity.getOwner().getName() + "'s Grave"), true);
+			player.sendMessage(Text.of(graveBlockEntity.getSavedOwner().getName() + "'s Grave"), true);
 		}
 
 		return player.isSneaking() ? ActionResult.PASS : ActionResult.SUCCESS;
@@ -110,16 +110,16 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 		if (CONFIG.Grave_Inv())
 			RetrieveGraveINV(playerEntity, world, pos, graveBlockEntity);
 		else
-			ItemScatterer.spawn(world, pos, graveBlockEntity.getInv());
+			ItemScatterer.spawn(world, pos, graveBlockEntity.getSavedInventory());
 
 		//xp
-		playerEntity.addExperience(((GraveBlockEntity) blockEntity).getXp());
+		playerEntity.addExperience(((GraveBlockEntity) blockEntity).getSavedExperience());
 
 		world.removeBlock(pos, false);
 	}
 
 	public void RetrieveGraveINV(PlayerEntity playerEntity, World world, BlockPos pos, GraveBlockEntity graveBlockEntity){
-		DefaultedList<ItemStack> inv = graveBlockEntity.getInv();
+		DefaultedList<ItemStack> inv = graveBlockEntity.getSavedInventory();
 		DefaultedList<ItemStack> dropInv = DefaultedList.of();
 
 		for (ItemStack itemStack : inv){
@@ -153,17 +153,17 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 
 		graveBlockEntity.markDirty();
 
-		if (graveBlockEntity.getOwner() == null){
+		if (graveBlockEntity.getSavedOwner() == null){
 			if (player.isCreative()) return;
 			DefaultedList<ItemStack> inv = DefaultedList.ofSize(1, GRAVE_ITEM.asItem().getDefaultStack());
 			ItemScatterer.spawn(world, pos, inv);
 			return;
 		}
-		if (graveBlockEntity.getInv() == null) return;
+		if (graveBlockEntity.getSavedInventory() == null) return;
 
-		ItemScatterer.spawn(world, pos, graveBlockEntity.getInv());
+		ItemScatterer.spawn(world, pos, graveBlockEntity.getSavedInventory());
 
-		((GraveBlockEntity) blockEntity).setInv(DefaultedList.copyOf(ItemStack.EMPTY));
+		((GraveBlockEntity) blockEntity).setSavedInventory(DefaultedList.copyOf(ItemStack.EMPTY));
 	}
 
 

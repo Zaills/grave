@@ -21,44 +21,40 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public class GraveBlockEntity extends BlockEntity {
-	private DefaultedList<ItemStack> inv;
-	private int xp;
-	private GameProfile Owner;
+	private DefaultedList<ItemStack> savedInventory;
+	private int savedExperience;
+	private GameProfile savedOwner;
 
 	public GraveBlockEntity(BlockPos pos, BlockState state) {
 		super(GraveFabric.GRAVE_ENTITY, pos, state);
 
-		this.inv = DefaultedList.ofSize(41, ItemStack.EMPTY);
-		this.xp = 0;
-		this.Owner = null;
+		this.savedInventory = DefaultedList.ofSize(41, ItemStack.EMPTY);
+		this.savedExperience = 0;
+		this.savedOwner = null;
 	}
 
-	public void setInv(DefaultedList<ItemStack> inv) {
-		this.inv = inv;
+	public void setSavedInventory(DefaultedList<ItemStack> savedInventory) {
+		this.savedInventory = savedInventory;
 		this.markDirty();
 	}
+	public DefaultedList<ItemStack> getSavedInventory() {
+		return this.savedInventory;
+	}
 
-	public void setXp(int xp) {
-		this.xp = xp;
+	public void setSavedExperience(int savedExperience) {
+		this.savedExperience = savedExperience;
 		this.markDirty();
 	}
+	public int getSavedExperience() {
+		return this.savedExperience;
+	}
 
-	public void setOwner(GameProfile profile) {
-		this.Owner = profile;
+	public void setSavedOwner(GameProfile profile) {
+		this.savedOwner = profile;
 		this.markDirty();
 	}
-
-
-	public DefaultedList<ItemStack> getInv() {
-		return this.inv;
-	}
-
-	public int getXp() {
-		return this.xp;
-	}
-
-	public GameProfile getOwner() {
-		return this.Owner;
+	public GameProfile getSavedOwner() {
+		return this.savedOwner;
 	}
 
 
@@ -66,18 +62,18 @@ public class GraveBlockEntity extends BlockEntity {
 	protected void readData(ReadView view) {
 		super.readData(view);
 
-		this.inv = DefaultedList.ofSize(view.getInt("ItemCount", 0), ItemStack.EMPTY);
-		if (!this.inv.isEmpty()) {
-			Inventories.readData(view, this.inv);
+		this.savedInventory = DefaultedList.ofSize(view.getInt("ItemCount", 0), ItemStack.EMPTY);
+		if (!this.savedInventory.isEmpty()) {
+			Inventories.readData(view, this.savedInventory);
 		}
-		this.xp = view.getInt("XP", 0);
+		this.savedExperience = view.getInt("XP", 0);
 
-		String OwnerID = view.getString("OwnerId", null);
-		String OwnerName = view.getString("OwnerName", null);
+		String ownerUUID = view.getString("ownerUUID", null);
+		String ownerName = view.getString("ownerName", null);
 
 
-		if (OwnerID != null && OwnerName != null) {
-			this.Owner = new GameProfile(UUID.fromString(OwnerID), OwnerName);
+		if (ownerUUID != null && ownerName != null) {
+			this.savedOwner = new GameProfile(UUID.fromString(ownerUUID), ownerName);
 		}
 	}
 
@@ -91,13 +87,13 @@ public class GraveBlockEntity extends BlockEntity {
 	public void writeData(WriteView view) {
 		super.writeData(view);
 
-		view.putInt("ItemCount", this.inv.size());
-		Inventories.writeData(view, this.inv);
-		view.putInt("XP", xp);
+		view.putInt("ItemCount", this.savedInventory.size());
+		Inventories.writeData(view, this.savedInventory);
+		view.putInt("XP", savedExperience);
 
-		if (Owner != null) {
-			view.putString("OwnerId", Owner.getId().toString());
-			view.putString("OwnerName", Owner.getName());
+		if (savedOwner != null) {
+			view.putString("ownerUUID", savedOwner.getId().toString());
+			view.putString("ownerName", savedOwner.getName());
 		}
 	}
 

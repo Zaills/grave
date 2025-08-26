@@ -9,7 +9,6 @@ import net.zaills.gravefabric.client.GraveBlockEntityRenderer;
 @Environment(EnvType.CLIENT)
 public class GraveFabricClient implements ClientModInitializer {
 
-
 	@Override
 	public void onInitializeClient() {
 		BlockEntityRendererFactories.register(GraveFabric.GRAVE_ENTITY, GraveBlockEntityRenderer::new);
