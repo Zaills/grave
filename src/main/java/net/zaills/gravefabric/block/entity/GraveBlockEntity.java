@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.ComponentsAccess;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -23,7 +24,7 @@ import java.util.UUID;
 public class GraveBlockEntity extends BlockEntity {
 	private DefaultedList<ItemStack> savedInventory;
 	private int savedExperience;
-	private GameProfile savedOwner;
+	private ProfileComponent savedOwner;
 
 	public GraveBlockEntity(BlockPos pos, BlockState state) {
 		super(GraveFabric.GRAVE_ENTITY, pos, state);
@@ -49,11 +50,11 @@ public class GraveBlockEntity extends BlockEntity {
 		return this.savedExperience;
 	}
 
-	public void setSavedOwner(GameProfile profile) {
+	public void setSavedOwner(ProfileComponent profile) {
 		this.savedOwner = profile;
 		this.markDirty();
 	}
-	public GameProfile getSavedOwner() {
+	public ProfileComponent getSavedOwner() {
 		return this.savedOwner;
 	}
 
@@ -66,15 +67,8 @@ public class GraveBlockEntity extends BlockEntity {
 		if (!this.savedInventory.isEmpty()) {
 			Inventories.readData(view, this.savedInventory);
 		}
+		this.savedOwner = view.read("profile", ProfileComponent.CODEC).orElse(null);
 		this.savedExperience = view.getInt("XP", 0);
-
-		String ownerUUID = view.getString("ownerUUID", null);
-		String ownerName = view.getString("ownerName", null);
-
-
-		if (ownerUUID != null && ownerName != null) {
-			this.savedOwner = new GameProfile(UUID.fromString(ownerUUID), ownerName);
-		}
 	}
 
 	@Override
@@ -89,12 +83,8 @@ public class GraveBlockEntity extends BlockEntity {
 
 		view.putInt("ItemCount", this.savedInventory.size());
 		Inventories.writeData(view, this.savedInventory);
+		view.putNullable("profile", ProfileComponent.CODEC, this.savedOwner);
 		view.putInt("XP", savedExperience);
-
-		if (savedOwner != null) {
-			view.putString("ownerUUID", savedOwner.getId().toString());
-			view.putString("ownerName", savedOwner.getName());
-		}
 	}
 
 	@Nullable

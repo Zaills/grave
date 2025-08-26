@@ -82,17 +82,17 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 		if (graveBlockEntity.getSavedOwner() == null)
 			return ActionResult.FAIL;
 
-		if (graveBlockEntity.getSavedOwner().getId().equals(player.getGameProfile().getId())) {
+		if (graveBlockEntity.getSavedOwner().gameProfile().getId().equals(player.getGameProfile().getId())) {
 			if (player.isSneaking()) {
 				player.sendMessage(
-						Text.translatable("message.grave-fabric.graveOwner", graveBlockEntity.getSavedOwner().getName()),
+						Text.translatable("message.grave-fabric.graveOwner", graveBlockEntity.getSavedOwner().gameProfile().getName()),
 						true);
 
 				return ActionResult.PASS;
 			} else retrieveGrave(player, world, pos);
 		} else {
 			player.sendMessage(
-					Text.translatable("message.grave-fabric.graveOwner", graveBlockEntity.getSavedOwner().getName()),
+					Text.translatable("message.grave-fabric.graveOwner", graveBlockEntity.getSavedOwner().gameProfile().getName()),
 					true);
 		}
 

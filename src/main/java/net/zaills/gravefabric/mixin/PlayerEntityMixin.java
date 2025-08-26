@@ -1,6 +1,7 @@
 package net.zaills.gravefabric.mixin;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -66,7 +67,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 		// Set block data
 		GraveBlockEntity graveBlockEntity = new GraveBlockEntity(gravePos, graveState);
 		graveBlockEntity.setSavedInventory(inv);
-		graveBlockEntity.setSavedOwner(player.getGameProfile());
+		graveBlockEntity.setSavedOwner(new ProfileComponent(player.getGameProfile()));
 		graveBlockEntity.setSavedExperience(player.totalExperience);
 		graveBlockEntity.markDirty();
 

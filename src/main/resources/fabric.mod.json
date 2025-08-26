@@ -5,7 +5,8 @@
 	"name": "Grave Fabric",
 	"description": "You'll thanks me later.",
 	"authors": [
-		"Zaills"
+		"Zaills",
+		"BackupCup"
 	],
 	"contact": {
 		"homepage": "https://github.com/Zaills",
@@ -15,6 +16,7 @@
 	"license": "CC0-1.0",
 	"icon": "assets/grave-fabric/icon.png",
 	"environment": "*",
+	"accessWidener" : "grave-fabric.accesswidener",
 	"entrypoints": {
 		"main": [
 			"net.zaills.gravefabric.GraveFabric"

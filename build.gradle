@@ -57,6 +57,10 @@ java {
 	targetCompatibility = JavaVersion.VERSION_21
 }
 
+loom {
+	accessWidenerPath = file("src/main/resources/grave-fabric.accesswidener")
+}
+
 jar {
 	inputs.property "archivesName", project.base.archivesName
 
