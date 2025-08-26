@@ -33,7 +33,9 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 
 	public GraveBlock(Settings settings) {
 		super(settings);
-		setDefaultState(this.stateManager.getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.NORTH).with(Properties.WATERLOGGED, false));
+		setDefaultState(this.stateManager.getDefaultState()
+				.with(Properties.HORIZONTAL_FACING, Direction.NORTH)
+				.with(Properties.WATERLOGGED, false));
 	}
 
 	@Nullable
@@ -41,12 +43,16 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockPos blockPos = ctx.getBlockPos();
 		FluidState fluidState = ctx.getWorld().getFluidState(blockPos);
-		return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing()).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+		return this.getDefaultState()
+				.with(FACING, ctx.getHorizontalPlayerFacing())
+				.with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
 	}
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> stateManager){
-		stateManager.add(Properties.HORIZONTAL_FACING, Properties.WATERLOGGED);
+		stateManager.add(
+				Properties.HORIZONTAL_FACING,
+				Properties.WATERLOGGED);
 	}
 
 	@Override
@@ -78,14 +84,16 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 
 		if (graveBlockEntity.getSavedOwner().getId().equals(player.getGameProfile().getId())) {
 			if (player.isSneaking()) {
-				player.sendMessage(Text.of(graveBlockEntity.getSavedOwner().getName() + "'s Grave"), true);
-				return ActionResult.PASS;
-			} else {
-				RetrieveGrave(player, world, pos);
-			}
+				player.sendMessage(
+						Text.translatable("message.grave-fabric.graveOwner", graveBlockEntity.getSavedOwner().getName()),
+						true);
 
+				return ActionResult.PASS;
+			} else retrieveGrave(player, world, pos);
 		} else {
-			player.sendMessage(Text.of(graveBlockEntity.getSavedOwner().getName() + "'s Grave"), true);
+			player.sendMessage(
+					Text.translatable("message.grave-fabric.graveOwner", graveBlockEntity.getSavedOwner().getName()),
+					true);
 		}
 
 		return player.isSneaking() ? ActionResult.PASS : ActionResult.SUCCESS;
@@ -93,13 +101,13 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 
 	@Override
 	public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player){
-		dropInv(world, pos, player);
+		dropInventory(world, pos, player);
 		super.onBreak(world, pos, state, player);
 		return state;
 	}
 
 
-	private void RetrieveGrave(PlayerEntity playerEntity, World world, BlockPos pos){
+	private void retrieveGrave(PlayerEntity playerEntity, World world, BlockPos pos){
 		if (world.isClient) return;
 
 		BlockEntity blockEntity = world.getBlockEntity(pos);
@@ -108,52 +116,46 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 		graveBlockEntity.markDirty();
 
 		if (CONFIG.Grave_Inv())
-			RetrieveGraveINV(playerEntity, world, pos, graveBlockEntity);
+			retrieveGraveInventory(playerEntity, world, pos, graveBlockEntity);
 		else
 			ItemScatterer.spawn(world, pos, graveBlockEntity.getSavedInventory());
 
-		//xp
-		playerEntity.addExperience(((GraveBlockEntity) blockEntity).getSavedExperience());
+		playerEntity.addExperience(graveBlockEntity.getSavedExperience());
 
 		world.removeBlock(pos, false);
 	}
 
-	public void RetrieveGraveINV(PlayerEntity playerEntity, World world, BlockPos pos, GraveBlockEntity graveBlockEntity){
-		DefaultedList<ItemStack> inv = graveBlockEntity.getSavedInventory();
-		DefaultedList<ItemStack> dropInv = DefaultedList.of();
+	public void retrieveGraveInventory(PlayerEntity playerEntity, World world, BlockPos pos, GraveBlockEntity graveBlockEntity){
+		DefaultedList<ItemStack> savedInventory = graveBlockEntity.getSavedInventory();
+		DefaultedList<ItemStack> droppedInventory = DefaultedList.of();
 
-		for (ItemStack itemStack : inv){
+		for (ItemStack itemStack : savedInventory) {
 			EquipmentSlot slot = playerEntity.getPreferredEquipmentSlot(itemStack);
-			if (slot != EquipmentSlot.MAINHAND && playerEntity.canEquip(itemStack, slot)){
+			if (slot != EquipmentSlot.MAINHAND && playerEntity.canEquip(itemStack, slot)) {
 				playerEntity.equipStack(slot, itemStack);
 			}
 			else if (playerEntity.getInventory().getEmptySlot() != -1) {
 				playerEntity.getInventory().insertStack(itemStack);
 			}
 			else {
-				if (playerEntity.getInventory().getStack(40).isEmpty()){
+				if (playerEntity.getInventory().getStack(40).isEmpty())
 					playerEntity.getInventory().insertStack(40, itemStack);
-				}
-				else{
-					dropInv.add(itemStack);
-				}
+				else droppedInventory.add(itemStack);
 			}
-
 		}
 
-		ItemScatterer.spawn(world, pos, dropInv);
+		ItemScatterer.spawn(world, pos, droppedInventory);
 	}
 
-	public void dropInv(World world, BlockPos pos, PlayerEntity player){
+	public void dropInventory(World world, BlockPos pos, PlayerEntity player){
 		if(world.isClient) return;
 
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-
 		if (!(blockEntity instanceof GraveBlockEntity graveBlockEntity)) return;
 
 		graveBlockEntity.markDirty();
 
-		if (graveBlockEntity.getSavedOwner() == null){
+		if (graveBlockEntity.getSavedOwner() == null) {
 			if (player.isCreative()) return;
 			DefaultedList<ItemStack> inv = DefaultedList.ofSize(1, GRAVE_ITEM.asItem().getDefaultStack());
 			ItemScatterer.spawn(world, pos, inv);
@@ -162,8 +164,7 @@ public class GraveBlock extends HorizontalFacingBlock implements BlockEntityProv
 		if (graveBlockEntity.getSavedInventory() == null) return;
 
 		ItemScatterer.spawn(world, pos, graveBlockEntity.getSavedInventory());
-
-		((GraveBlockEntity) blockEntity).setSavedInventory(DefaultedList.copyOf(ItemStack.EMPTY));
+		graveBlockEntity.setSavedInventory(DefaultedList.copyOf(ItemStack.EMPTY));
 	}
 
 

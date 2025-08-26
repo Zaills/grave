@@ -5,5 +5,9 @@
   "text.config.grave-config.option.Get_grave_coord" : "Give grave coord when dying",
   "text.config.grave-config.option.SCATTER" : "SCATTER",
   "text.config.grave-config.option.SCATTER.tooltip" : "The one and only 100% bug free option !\nYea it just deactivate your grave",
-  "grave-fabric:grave": "Grave"
+  "grave-fabric:grave": "Grave",
+
+  "block.grave-fabric.grave": "Grave",
+  "item.grave-fabric.grave": "Grave",
+  "message.grave-fabric.graveOwner": "%s's Grave"
 }
