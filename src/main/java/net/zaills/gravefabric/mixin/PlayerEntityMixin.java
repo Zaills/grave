@@ -24,26 +24,26 @@ import java.util.Optional;
 import static net.zaills.gravefabric.GraveFabric.CONFIG;
 
 @Mixin(PlayerEntity.class)
-public abstract class DyingMixing extends LivingEntity {
+public abstract class PlayerEntityMixin extends LivingEntity {
 
-	protected DyingMixing(EntityType<? extends LivingEntity> type, World world){
+	protected PlayerEntityMixin(EntityType<? extends LivingEntity> type, World world){
 		super(type, world);
 	}
 
 	@Inject(method = "dropInventory", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;dropAll()V", shift = At.Shift.BEFORE))
-	private void placeGrave(CallbackInfo ci) {
+	private void gravefabric$placeGrave(CallbackInfo ci) {
 		if (CONFIG.SCATTER()) {
 			return;
 		}
 
 		final PlayerEntity player = (PlayerEntity) (Object) this;
 
-		Place(this.getWorld(), this.getPos().subtract(0, 1, 0), player);
+		placeGraveBlock(this.getWorld(), this.getPos().subtract(0, 1, 0), player);
 		player.getInventory().clear();
 	}
 
 	@Unique
-	private void Place(World world, Vec3d pos, PlayerEntity player) {
+	private void placeGraveBlock(World world, Vec3d pos, PlayerEntity player) {
 		if (world.isClient) {
 			return;
 		}
@@ -78,12 +78,14 @@ public abstract class DyingMixing extends LivingEntity {
 		world.addBlockEntity(graveBlockEntity);
 
 		System.out.println(player.getName() + "'s grave spawn at: " + gravePos.getX() + ", " + gravePos.getY() + ", " + gravePos.getZ());
+
 		if (CONFIG.Get_grave_coord()) {
 			player.sendMessage(Text.of("Grave spawn at: " + gravePos.getX() + ", " + gravePos.getY() + ", " + gravePos.getZ()), false);
 		}
 	}
 
 	// Modify later to add more type of grave
+	//This needs to be separated into a different file and directory - Cup
 	@Unique
 	private static BlockState getGraveType(PlayerEntity player){
 		return GraveFabric.BASE_GRAVE
