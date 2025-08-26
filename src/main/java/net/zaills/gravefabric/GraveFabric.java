@@ -36,9 +36,15 @@ public class GraveFabric implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		Registry.register(Registries.BLOCK,
+				RegistryKey.of(RegistryKeys.BLOCK, Identifier.of(MOD_ID, "grave")),
+				BASE_GRAVE);
+		Registry.register(Registries.ITEM,
+				RegistryKey.of(RegistryKeys.ITEM, Identifier.of(MOD_ID, "grave")),
+				GRAVE_ITEM);
 
-		Registry.register(Registries.BLOCK, RegistryKey.of(RegistryKeys.BLOCK, Identifier.of(MOD_ID, "grave")), BASE_GRAVE);
-		Registry.register(Registries.ITEM, RegistryKey.of(RegistryKeys.ITEM, Identifier.of(MOD_ID, "grave")), GRAVE_ITEM);
-		GRAVE_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of(MOD_ID, "grave"), FabricBlockEntityTypeBuilder.create(GraveBlockEntity::new, BASE_GRAVE).build());
+		GRAVE_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE,
+				Identifier.of(MOD_ID, "grave"),
+				FabricBlockEntityTypeBuilder.create(GraveBlockEntity::new, BASE_GRAVE).build());
 	}
 }
