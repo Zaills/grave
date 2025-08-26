@@ -13,7 +13,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
-import net.zaills.gravefabric.block.BaseGraveBlock;
+import net.zaills.gravefabric.block.GraveBlock;
 import net.zaills.gravefabric.block.entity.GraveBlockEntity;
 import net.zaills.gravefabric.config.GraveConfig;
 
@@ -22,7 +22,7 @@ public class GraveFabric implements ModInitializer {
 
 	public static final GraveConfig CONFIG = GraveConfig.createAndLoad();
 
-	public static final Block BASE_GRAVE = new BaseGraveBlock(AbstractBlock.Settings.create()
+	public static final Block BASE_GRAVE = new GraveBlock(AbstractBlock.Settings.create()
 			.strength(0.8f, -1f)
 			.registryKey(RegistryKey.of(RegistryKeys.BLOCK,
 					Identifier.of(MOD_ID, "grave")))

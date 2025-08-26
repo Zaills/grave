@@ -18,6 +18,9 @@
 	"entrypoints": {
 		"main": [
 			"net.zaills.gravefabric.GraveFabric"
+		],
+		"client": [
+			"net.zaills.gravefabric.GraveFabricClient"
 		]
 	},
 	"mixins": [
